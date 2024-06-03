@@ -1,4 +1,4 @@
-name: Lede_OpenWrt_Passwall
+name: Lede_Passwall
 
 on:
   workflow_dispatch:
@@ -8,8 +8,8 @@ on:
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede.git
   REPO_BRANCH: master
-  CONFIG_FILE: configs/x86_64.config
-  DIY_SCRIPT: diy-passwall.sh
+  CONFIG_FILE: configs/lede_pass.config
+  DIY_SCRIPT: diy-mini.sh
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
