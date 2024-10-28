@@ -1,4 +1,4 @@
-name: Lede_Passwall
+name: X86_64 OpenWrt
 
 on:
   workflow_dispatch:
@@ -6,10 +6,10 @@ on:
     - cron: 0 19 * * *
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/openwrt.git
+  REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
-  CONFIG_FILE: configs/1lede_pass.config
-  DIY_SCRIPT: diy-pass.sh
+  CONFIG_FILE: configs/x86_64.config
+  DIY_SCRIPT: diy1.sh
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
@@ -50,6 +50,7 @@ jobs:
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get -y clean
         sudo timedatectl set-timezone "$TZ"
+        sudo -E apt install clang
 
     - name: Combine Disks
       uses: easimon/maximize-build-space@master
@@ -168,7 +169,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true'
       uses: ncipollo/release-action@v1
       with:
-        name: LEDE_${{ env.DATE }} for ${{ env.FIRMWARE_TAG }}
+        name: R${{ env.DATE }} for ${{ env.FIRMWARE_TAG }}
         allowUpdates: true
         tag: ${{ env.FIRMWARE_TAG }}
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -180,9 +181,9 @@ jobs:
           - ⚽ 固件源码: ${{ env.REPO_URL }}
           - 💝 源码分支: ${{ env.REPO_BRANCH }}
           - 🚀 内核版本: ${{ env.KERNEL }}
-          - 🌐 默认地址: 192.168.1.1
+          - 🌐 默认地址: 192.168.100.1
           - 🔑 默认密码: password
-          ### 📒 固件版本
+          ### 🧊 固件版本
           - 固件编译前最后一次➦[主源码](${{ env.REPO_URL }})更新记录
           - ${{ env.COMMIT_AUTHOR }}
           - ${{ env.COMMIT_DATE }}
