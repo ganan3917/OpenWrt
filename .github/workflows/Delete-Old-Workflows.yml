@@ -3,7 +3,7 @@ name: Delete Old Workflows
 on:
   workflow_dispatch:
   schedule:
-    - cron: 0 18 * * *
+    - cron: 0 16 * * *
 
 jobs:
   Cleaning:
@@ -15,7 +15,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         retain_days: 7
-        keep_minimum_runs: true
+        keep_minimum_runs: 3
 
     - name: Delete Old Releases
       uses: dev-drprasad/delete-older-releases@master
