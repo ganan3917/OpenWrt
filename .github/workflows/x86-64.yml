@@ -8,13 +8,13 @@ on:
 env:
   REPO_URL: https://github.com/ganan3917/lede
   REPO_BRANCH: master
-  CONFIG_FILE: configs/x86_64.config
+  CONFIG_FILE: configs/5.15openclash.config
   DIY_SCRIPT: diy1.sh
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
   FIRMWARE_RELEASE: true
-  FIRMWARE_TAG: X86_64
+  FIRMWARE_TAG: X86_64_openclash
   TZ: Asia/Shanghai
 
 jobs:
