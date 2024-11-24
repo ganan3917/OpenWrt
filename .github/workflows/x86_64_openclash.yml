@@ -1,4 +1,4 @@
-name: X86_64 OpenWrt
+name: x86_64_openclash
 
 on:
   workflow_dispatch:
