@@ -6,7 +6,7 @@ on:
     - cron: 0 19 * * *
 
 env:
-  REPO_URL: https://github.com/ganan3917/lede
+  REPO_URL: https://github.com/ganan3917/immortalwrt
   REPO_BRANCH: master
   CONFIG_FILE: configs/imm.config
   DIY_SCRIPT: diy1.sh
