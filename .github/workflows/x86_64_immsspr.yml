@@ -8,7 +8,7 @@ on:
 env:
   REPO_URL: https://github.com/ganan3917/immortalwrt
   REPO_BRANCH: master
-  CONFIG_FILE: configs/immssrplus.config
+  CONFIG_FILE: configs/immssrp.config
   DIY_SCRIPT: diy1.sh
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
