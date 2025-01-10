@@ -9,7 +9,7 @@ env:
   REPO_URL: https://github.com/ganan3917/immortalwrt
   REPO_BRANCH: master
   CONFIG_FILE: configs/immssrp.config
-  DIY_SCRIPT: diy1.sh
+  DIY_SCRIPT: diy5.sh
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
