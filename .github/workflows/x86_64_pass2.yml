@@ -1,4 +1,4 @@
-name: x86_64_istore
+name: x86_64_pass2
 
 on:
   workflow_dispatch:
