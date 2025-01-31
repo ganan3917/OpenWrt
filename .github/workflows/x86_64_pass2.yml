@@ -8,13 +8,13 @@ on:
 env:
   REPO_URL: https://github.com/ganan3917/lede
   REPO_BRANCH: master
-  CONFIG_FILE: configs/istore.config
+  CONFIG_FILE: configs/pass2.config
   DIY_SCRIPT: diy1.sh
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
   FIRMWARE_RELEASE: true
-  FIRMWARE_TAG: X86_64_istore
+  FIRMWARE_TAG: X86_64_pass2
   TZ: Asia/Shanghai
 
 jobs:
