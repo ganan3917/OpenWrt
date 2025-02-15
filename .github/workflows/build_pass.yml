@@ -56,7 +56,7 @@ jobs:
         working-directory: ${{ github.workspace }}/immortalwrt
 
       - name: Upload firmware artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: immortalwrt-firmware
           path: ${{ github.workspace }}/immortalwrt/bin/targets/*/*/*.bin
