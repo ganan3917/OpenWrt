@@ -47,7 +47,6 @@ jobs:
       - name: Load custom configuration
         run: |
          cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} .config
-         working-directory: ${{ github.workspace }}/immortalwrt
         
       - name: Build firmware
         run: |
