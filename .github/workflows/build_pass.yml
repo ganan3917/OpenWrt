@@ -46,13 +46,9 @@ jobs:
 
       - name: Load custom configuration
         run: |
-          if [ -n "${{ env.CONFIG_FILE }}" ]; then
             cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} .config
-          else
-            make defconfig
-          fi
         working-directory: ${{ github.workspace }}/immortalwrt
-
+        
       - name: Update and install feeds
         run: |
           ./scripts/feeds update -a
