@@ -20,11 +20,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Clean APT cache
-        run: |
-          sudo apt-get clean
-          sudo rm -rf /var/lib/apt/lists/*
-
       - name: Set up environment
         run: |
           sudo apt-get update
@@ -37,13 +32,7 @@ jobs:
           python3-pyelftools qemu-utils re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs \
           unzip vim wget xmlto xxd zlib1g-dev zstd
           
-      - name: Combine Disks
-        uses: easimon/maximize-build-space@master
-        with:
-          swap-size-mb: 2048
-          temp-reserve-mb: 100
-          root-reserve-mb: 512
-        
+   
       - name: Clone source code
         run: |
           git clone --depth=1 ${{ env.REPO_URL }} -b ${{ env.REPO_BRANCH }} immortalwrt
@@ -57,13 +46,7 @@ jobs:
         
       - name: Load custom configuration
         run: |
-         echo "Trying to copy file from: ${{ github.workspace }}/${{ env.CONFIG_FILE }}"
-         if [ -f "${{ github.workspace }}/${{ env.CONFIG_FILE }}" ]; then
-         echo "File exists, copying..."
          cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} .config
-         else
-         echo "File does not exist!"
-         fi
          working-directory: ${{ github.workspace }}/immortalwrt
         
       - name: Build firmware
