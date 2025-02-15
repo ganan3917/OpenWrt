@@ -11,7 +11,7 @@ env:
   # 手动触发输入参数默认值
   REPO_URL: 'https://github.com/immortalwrt/immortalwrt.git'
   REPO_BRANCH: 'master'
-  CONFIG_FILE: '/configs/pass.config'
+  CONFIG_FILE: 'configs/pass.config'
 
 jobs:
   build:
