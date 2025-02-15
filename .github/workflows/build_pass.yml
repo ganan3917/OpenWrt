@@ -37,20 +37,19 @@ jobs:
           git clone ${{ env.REPO_URL }} -b ${{ env.REPO_BRANCH }} immortalwrt
         working-directory: ${{ github.workspace }}
 
-      - name: Update and install feeds
-        run: |
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
-        working-directory: ${{ github.workspace }}/immortalwrt
-
       - name: Load custom configuration
         run: |
           if [ -n "${{ env.CONFIG_FILE }}" ]; then
             cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} .config
           else
-            # 如果没有提供自定义配置文件，可使用默认配置
             make defconfig
           fi
+        working-directory: ${{ github.workspace }}/immortalwrt
+
+      - name: Update and install feeds
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
         working-directory: ${{ github.workspace }}/immortalwrt
 
       - name: Build firmware
