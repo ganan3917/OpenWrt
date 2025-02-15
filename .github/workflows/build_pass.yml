@@ -51,8 +51,14 @@ jobs:
 
       - name: Load custom configuration
         run: |
-            cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} .config
-        working-directory: ${{ github.workspace }}/immortalwrt
+         echo "Trying to copy file from: ${{ github.workspace }}/${{ env.CONFIG_FILE }}"
+         if [ -f "${{ github.workspace }}/${{ env.CONFIG_FILE }}" ]; then
+         echo "File exists, copying..."
+         cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} .config
+         else
+         echo "File does not exist!"
+         fi
+         working-directory: ${{ github.workspace }}/immortalwrt
         
       - name: Update and install feeds
         run: |
