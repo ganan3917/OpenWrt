@@ -1,3 +1,24 @@
+clickable Avatar: undefined
+You are running out of disk space. The runner will stop working when the machine runs out of disk space. Free space left: 50 MB
+It seems you're in a tight spot with only 50 MB of free disk space remaining. Here are some steps you can take to free up space and prevent the runner from stopping due to lack of disk space:
+1. Identify and Delete Unnecessary Files
+Temporary Files:
+On Windows, you can use the Disk Cleanup tool. Search for "Disk Cleanup" in the Start menu, select the drive with low space (usually C:), and let it scan for temporary files, system update backups, and other junk files. Check the boxes for the file types you want to delete and click "OK".
+On macOS, you can use the built - in storage management. Go to "Apple Menu" > "About This Mac" > "Storage". Here, you can see a breakdown of what's taking up space. Click "Manage" and then navigate to "Temporary Files" to see and delete them.
+On Linux, you can use commands like sudo apt - get clean to clean up the package cache. If you use other package managers like yum, you can use yum clean all. Also, the /tmp directory often contains temporary files that can be safely deleted. You can use rm -rf /tmp/* (be cautious as this will delete all files in /tmp).
+Large Files You No Longer Need:
+Use a file explorer to search for large files. On Windows, you can sort files by size in File Explorer. On macOS, you can use "Finder" and sort by size. On Linux, you can use the du -h --max - depth = 1 command in a terminal to see the size of directories at the root level of the current directory. Look for large files or directories that you can delete, such as old media files, large application installers, or unused data files.
+2. Uninstall Unused Applications
+Windows: Go to "Settings" > "Apps" > "Apps & features". Here, you can see a list of installed applications. Select the ones you no longer use and click "Uninstall".
+macOS: Open "Launchpad", find the application icon, click and hold until the icons start to jiggle, and then click the "X" on the application icon to uninstall it. You can also use the "Applications" folder in "Finder" and drag the application to the "Trash".
+Linux: If you installed applications using a package manager, for example, with apt - get on Debian - based systems, you can use the command sudo apt - get remove <package - name> to uninstall an application. For Red Hat - based systems, you can use yum remove <package - name> with the appropriate package name.
+3. Move Files to an External Storage
+If you have an external hard drive, USB flash drive, or cloud storage (such as Google Drive, Dropbox, or OneDrive), you can move less - frequently used files to these locations.
+For an external hard drive or USB flash drive, simply connect it to your computer, and then copy the files you want to move from your local disk to the external storage using the file explorer.
+For cloud storage, you need to install the respective cloud storage client on your computer. After that, you can create a folder in the cloud storage directory on your local machine and move the files into it. The files will then be synced to the cloud.
+You are running out of disk space. The runner will stop working when the machine runs out of disk space. Free space left: 50 MB
+翻译为中文（简体）
+你的磁盘空间快用完了。当机器磁盘空间耗尽时，运行程序将停止工作。剩余可用空间：50MB。
 name: Build ImmortalWrt
 
 on:
@@ -65,3 +86,177 @@ jobs:
         with:
           name: immortalwrt-firmware
           path: ${{ github.workspace }}/immortalwrt/bin/targets/*/*/*.bin
+问题分析
+你给出的是一个 GitHub Actions 的工作流配置文件，用于构建 ImmortalWrt 固件。不过运行时提示磁盘空间不足，剩余仅 50MB，这可能会导致工作流在后续步骤（如克隆代码、编译固件等）因空间不够而失败。
+解决方案建议
+1. 进一步优化磁盘空间清理
+在 Combine Disks 步骤已经使用了 easimon/maximize-build-space 来释放空间，但可以在安装依赖之前再增加一些磁盘清理操作。例如，清理 APT 缓存：
+yaml
+- name: Clean APT cache
+  run: |
+    sudo apt-get clean
+    sudo rm -rf /var/lib/apt/lists/*
+将这个步骤添加到 Set up environment 步骤之前，这样可以提前释放一些磁盘空间。
+2. 调整 easimon/maximize-build-space 参数
+目前 swap-size-mb 设为 1024MB，temp-reserve-mb 设为 100MB，root-reserve-mb 设为 1024MB。可以尝试进一步调整这些参数，比如增大 swap-size-mb 以利用交换空间，同时适当减少 root-reserve-mb（如果可行的话）。
+yaml
+- name: Combine Disks
+  uses: easimon/maximize-build-space@master
+  with:
+    swap-size-mb: 2048
+    temp-reserve-mb: 100
+    root-reserve-mb: 512
+3. 避免不必要的依赖安装
+在 Set up environment 步骤中安装了大量的依赖包，检查是否有一些包是实际上不需要的。例如，某些开发工具可能在特定的构建过程中并不需要，可以将它们移除。如果不确定，可以分阶段安装依赖，在构建过程中根据报错信息再补充安装。
+4. 减少克隆代码的大小
+如果仓库很大，可以使用浅克隆（shallow clone）来减少磁盘占用。修改 Clone source code 步骤如下：
+yaml
+- name: Clone source code
+  run: |
+    git clone --depth=1 ${{ env.REPO_URL }} -b ${{ env.REPO_BRANCH }} immortalwrt
+  working-directory: ${{ github.workspace }}
+--depth=1 参数表示只克隆最新的一次提交，而不是整个仓库的历史记录，这样可以显著减少克隆所需的磁盘空间。
+完整修改后的工作流示例
+yaml
+name: Build ImmortalWrt
+
+on:
+  # 手动触发工作流
+  workflow_dispatch:
+  # 定时自动触发，这里设置为每周六凌晨 3 点
+  schedule:
+    - cron: '0 19 * * *'
+
+env:
+  # 手动触发输入参数默认值
+  REPO_URL: 'https://github.com/immortalwrt/immortalwrt.git'
+  REPO_BRANCH: 'master'
+  CONFIG_FILE: 'configs/pass.config'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Clean APT cache
+        run: |
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+
+      - name: Set up environment
+        run: |
+          sudo apt-get update
+          sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+          bzip2 ccache clang cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext gcc-multilib \
+          g++-multilib git gnutls-dev gperf haveged help2man intltool lib32gcc-s1 libc6-dev-i386 libelf-dev \
+          libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses-dev libpython3-dev \
+          libreadline-dev libssl-dev libtool libyaml-dev libz-dev lld llvm lrzsz mkisofs msmtp nano \
+          ninja-build p7zip p7zip-full patch pkgconf python3 python3-pip python3-ply python3-docutils \
+          python3-pyelftools qemu-utils re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs \
+          unzip vim wget xmlto xxd zlib1g-dev zstd
+          
+      - name: Combine Disks
+        uses: easimon/maximize-build-space@master
+        with:
+          swap-size-mb: 2048
+          temp-reserve-mb: 100
+          root-reserve-mb: 512
+        
+      - name: Clone source code
+        run: |
+          git clone --depth=1 ${{ env.REPO_URL }} -b ${{ env.REPO_BRANCH }} immortalwrt
+        working-directory: ${{ github.workspace }}
+
+      - name: Load custom configuration
+        run: |
+            cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} .config
+        working-directory: ${{ github.workspace }}/immortalwrt
+        
+      - name: Update and install feeds
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+        working-directory: ${{ github.workspace }}/immortalwrt
+
+      - name: Build firmware
+        run: |
+          make -j$(nproc) V=s
+        working-directory: ${{ github.workspace }}/immortalwrt
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: immortalwrt-firmware
+          path: ${{ github.workspace }}/immortalwrt/bin/targets/*/*/*.bin
+通过以上这些调整，应该可以在一定程度上缓解磁盘空间不足的问题，让工作流更顺利地运行。
+﻿
+
+name: Build ImmortalWrt
+
+on:
+# 手动触发工作流
+workflow_dispatch:
+# 定时自动触发，这里设置为每周六凌晨 3 点
+schedule:
+- cron: '0 19 * * *'
+
+env:
+# 手动触发输入参数默认值
+REPO_URL: 'https://github.com/immortalwrt/immortalwrt.git'
+REPO_BRANCH: 'master'
+CONFIG_FILE: 'configs/pass.config'
+
+jobs:
+build:
+runs-on: ubuntu-22.04
+steps:
+- name: Checkout
+uses: actions/checkout@v3
+
+- name: Set up environment
+run: |
+sudo apt-get update
+sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+bzip2 ccache clang cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext gcc-multilib \
+g++-multilib git gnutls-dev gperf haveged help2man intltool lib32gcc-s1 libc6-dev-i386 libelf-dev \
+libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses-dev libpython3-dev \
+libreadline-dev libssl-dev libtool libyaml-dev libz-dev lld llvm lrzsz mkisofs msmtp nano \
+ninja-build p7zip p7zip-full patch pkgconf python3 python3-pip python3-ply python3-docutils \
+python3-pyelftools qemu-utils re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs \
+unzip vim wget xmlto xxd zlib1g-dev zstd
+
+- name: Combine Disks
+uses: easimon/maximize-build-space@master
+with:
+swap-size-mb: 1024
+temp-reserve-mb: 100
+root-reserve-mb: 1024
+
+- name: Clone source code
+run: |
+git clone ${{ env.REPO_URL }} -b ${{ env.REPO_BRANCH }} immortalwrt
+working-directory: ${{ github.workspace }}
+
+- name: Load custom configuration
+run: |
+cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} .config
+working-directory: ${{ github.workspace }}/immortalwrt
+
+- name: Update and install feeds
+run: |
+./scripts/feeds update -a
+./scripts/feeds install -a
+working-directory: ${{ github.workspace }}/immortalwrt
+
+- name: Build firmware
+run: |
+make -j$(nproc) V=s
+working-directory: ${{ github.workspace }}/immortalwrt
+
+- name: Upload firmware artifacts
+uses: actions/upload-artifact@v4
+with:
+name: immortalwrt-firmware
+path: ${{ github.workspace }}/immortalwrt/bin/targets/*/*/*.bin
