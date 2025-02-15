@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   # 定时自动触发，这里设置为每周六凌晨 3 点
   schedule:
-    - cron: '0 19 * * 0'
+    - cron: '0 19 * * *'
 
 env:
   # 手动触发输入参数默认值
