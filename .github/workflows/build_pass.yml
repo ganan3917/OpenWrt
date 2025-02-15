@@ -49,6 +49,12 @@ jobs:
           git clone --depth=1 ${{ env.REPO_URL }} -b ${{ env.REPO_BRANCH }} immortalwrt
         working-directory: ${{ github.workspace }}
 
+      - name: Update and install feeds
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+        working-directory: ${{ github.workspace }}/immortalwrt
+        
       - name: Load custom configuration
         run: |
          echo "Trying to copy file from: ${{ github.workspace }}/${{ env.CONFIG_FILE }}"
@@ -60,12 +66,6 @@ jobs:
          fi
          working-directory: ${{ github.workspace }}/immortalwrt
         
-      - name: Update and install feeds
-        run: |
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
-        working-directory: ${{ github.workspace }}/immortalwrt
-
       - name: Build firmware
         run: |
           make -j$(nproc) V=s
