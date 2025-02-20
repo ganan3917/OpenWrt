@@ -14,7 +14,7 @@ env:
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
   FIRMWARE_RELEASE: true
-  FIRMWARE_TAG: X86_64_openclash
+  FIRMWARE_TAG: X86_64_all
   TZ: Asia/Shanghai
 
 jobs:
@@ -183,6 +183,7 @@ jobs:
           - 🚀 内核版本: ${{ env.KERNEL }}
           - 🌐 默认地址: 192.168.1.1
           - 🔑 默认密码: password
+          - 🚀 本固件包含ssrplus、passwall、openclash。
           ### 🧊 固件版本
           - 固件编译前最后一次➦[主源码](${{ env.REPO_URL }})更新记录
           - ${{ env.COMMIT_AUTHOR }}
