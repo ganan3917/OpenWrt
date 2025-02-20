@@ -6,7 +6,7 @@ on:
     - cron: 0 19 * * *
 
 env:
-  REPO_URL: https://github.com/ganan3917/OpenWrt.git
+  REPO_URL: https://github.com/ganan3917/lede.git
   REPO_BRANCH: master
   CONFIG_FILE: configs/ssrp.config
   DIY_SCRIPT: diy1.sh
