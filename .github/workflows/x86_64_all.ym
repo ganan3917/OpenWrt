@@ -1,4 +1,4 @@
-name: x86_64_clash
+name: x86_64_all
 
 on:
   workflow_dispatch:
