@@ -181,10 +181,4 @@ jobs:
           - 内核版本: ${{ env.KERNEL }}
           - 默认地址: 192.168.1.1
           - 默认密码: password
-          - 本固件属于纯净精简版，插件列表ssrplus、passwall、openclash，autoreboot、vlmcsd、gecoosac。
-          ### 🧊 固件版本
-          - 固件编译前最后一次➦[主源码](${{ env.REPO_URL }})更新记录
-          - ${{ env.COMMIT_AUTHOR }}
-          - ${{ env.COMMIT_DATE }}
-          - ${{ env.COMMIT_MESSAGE }}
-          - ${{ env.COMMIT_HASH }}
+          - 本固件属于纯净精简版，插件列表ssrplus、passwall、openclash，autoreboot、vlmcsd、gecoosac
