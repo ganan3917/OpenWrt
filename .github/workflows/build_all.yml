@@ -176,14 +176,12 @@ jobs:
          artifacts: ${{ env.FIRMWARE_PATH }}/*
          body: |
           **This is OpenWrt Firmware for ${{ env.FIRMWARE_TAG }}**
-          ### 📒 固件信息
-          - 💻 平台架构: ${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
-          - ⚽ 固件源码: ${{ env.REPO_URL }}
-          - 💝 源码分支: ${{ env.REPO_BRANCH }}
-          - 🚀 内核版本: ${{ env.KERNEL }}
-          - 🌐 默认地址: 192.168.1.1
-          - 🔑 默认密码: password
-          - 🚀 本固件包含ssrplus、passwall、openclash。
+          ### 固件信息
+          - 平台架构: ${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
+          - 内核版本: ${{ env.KERNEL }}
+          - 默认地址: 192.168.1.1
+          - 默认密码: password
+          - 本固件属于纯净精简版，插件列表ssrplus、passwall、openclash，autoreboot、vlmcsd、gecoosac。
           ### 🧊 固件版本
           - 固件编译前最后一次➦[主源码](${{ env.REPO_URL }})更新记录
           - ${{ env.COMMIT_AUTHOR }}
