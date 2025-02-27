@@ -1,4 +1,4 @@
-name: x86_64_ssrplus
+name: x86_64_ssrp
 
 on:
   workflow_dispatch:
