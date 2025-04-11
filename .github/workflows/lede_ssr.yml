@@ -1,4 +1,4 @@
-name:lede_ssr
+name: lede_ssr
 
 on:
   workflow_dispatch:
