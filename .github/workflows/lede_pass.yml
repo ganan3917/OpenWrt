@@ -1,5 +1,5 @@
 
-name: lede_clash
+name: lede_pass
 
 on: 
   workflow_dispatch:
