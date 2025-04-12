@@ -3,6 +3,8 @@
   
 # 基于lede源码编译的OpenWrt x86_64固件纯净版
 
+每天凌晨3点自动编译
+
 ### 功能预览：
 
 <img src="./images/lede.png"/>
