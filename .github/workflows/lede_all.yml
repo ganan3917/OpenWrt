@@ -1,4 +1,4 @@
-name: lede_ssr
+name: lede_all
 
 on: 
   workflow_dispatch:
@@ -8,13 +8,13 @@ on:
 env:
   REPO_URL: https://github.com/ganan3917/lede
   REPO_BRANCH: master
-  CONFIG_FILE: configs/ssr.config
-  DIY_SCRIPT: diy-ssr.sh
+  CONFIG_FILE: configs/all.config
+  DIY_SCRIPT: diy.sh
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
   FIRMWARE_RELEASE: true
-  FIRMWARE_TAG: X86_64_ssrplus
+  FIRMWARE_TAG: X86_64_all
   TZ: Asia/Shanghai
 
 jobs:
