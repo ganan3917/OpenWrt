@@ -7,7 +7,7 @@
 
 ### 固件说明
 
-采用[LEDE](https://github.com/coolsnowwolf/lede)源码编译，固件功能如上图所示：
+采用[LEDE](https://github.com/coolsnowwolf/lede)源码编译
 
 - 插件列表
    - 定时重启
