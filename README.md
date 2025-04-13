@@ -20,6 +20,7 @@
    - ShadowsocksR Plus+
    - passwall
    - openclash
+   - upnp
 
 - 下载链接
 [https://github.com/ganan3917/OpenWrt/releases](https://github.com/ganan3917/OpenWrt/releases)
