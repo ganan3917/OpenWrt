@@ -13,10 +13,10 @@
    - 定时重启
    - KMS服务器
    - 上网时间控制
-   - ShadowsocksR Plus+
-   - passwall
-   - openclash
+   - [ShadowsocksR Plus+](https://github.com/fw876/helloworld.git)
+   - [passwall](https://github.com/xiaorouji/openwrt-passwall)
+   - [openclash](https://github.com/vernesong/OpenClash)
 
-- 下载链接
-[https://github.com/ganan3917/OpenWrt/releases](https://github.com/ganan3917/OpenWrt/releases)
+- 下载链接：[https://github.com/ganan3917/OpenWrt/releases](https://github.com/ganan3917/OpenWrt/releases)
+
 
