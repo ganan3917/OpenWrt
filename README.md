@@ -7,7 +7,7 @@
 
 ### 固件说明
 
-自用固件,使用[LEDE](https://github.com/coolsnowwolf/lede)源码编译
+使用[LEDE](https://github.com/coolsnowwolf/lede)源码编译的纯净版自用固件。
 
 - 插件列表
    - aotureboot(定时重启)
@@ -17,8 +17,8 @@
    - [passwall](https://github.com/xiaorouji/openwrt-passwall)
    - [openclash](https://github.com/vernesong/OpenClash)
    - diskman (磁盘管理)
-   - dockerman （容器）
-   - mosdns （dns）
+   - dockerman （docker容器）
+   - mosdns
 
 - 下载链接：[https://github.com/ganan3917/OpenWrt/releases](https://github.com/ganan3917/OpenWrt/releases)
 
