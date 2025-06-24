@@ -1,13 +1,11 @@
 
 <img width="768" src="./images/openwrt.png"/>
   
-# 基于lede源码编译的OpenWrt x86_64固件纯净版
+# 使用[LEDE](https://github.com/coolsnowwolf/lede)源码编译的纯净版自用固件。
 
-### 每天凌晨3点自动编译
+# 固件说明
 
-### 固件说明
-
-使用[LEDE](https://github.com/coolsnowwolf/lede)源码编译的纯净版自用固件。
+每天凌晨3点自动编译
 
 - 插件列表
    - aotureboot(定时重启)
@@ -18,7 +16,6 @@
    - [openclash](https://github.com/vernesong/OpenClash)
    - diskman (磁盘管理)
    - dockerman （docker容器）
-   - mosdns
 
 - 下载链接：[https://github.com/ganan3917/OpenWrt/releases](https://github.com/ganan3917/OpenWrt/releases)
 
