@@ -1,7 +1,7 @@
 
 <img width="768" src="./images/openwrt.png"/>
   
-# 使用[LEDE](https://github.com/coolsnowwolf/lede)源码编译的纯净版自用固件。
+# 使用[LEDE](https://github.com/coolsnowwolf/lede)源码编译的x86_64纯净版固件。
 
 # 固件说明
 
