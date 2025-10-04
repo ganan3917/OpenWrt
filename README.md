@@ -1,4 +1,4 @@
-
+[![lede_all](https://github.com/ganan3917/OpenWrt/actions/workflows/lede_all.yml/badge.svg)](https://github.com/ganan3917/OpenWrt/actions/workflows/lede_all.yml)
 <img width="768" src="./images/openwrt.png"/>
   
 # 使用[LEDE](https://github.com/coolsnowwolf/lede)源码编译的x86_64纯净版固件。
