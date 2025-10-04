@@ -14,7 +14,7 @@ jobs:
       LEDE_REPO: https://github.com/coolsnowwolf/lede
       LEDE_BRANCH: master
       # 自定义文件路径（仓库根目录下的custom文件夹）
-      CUSTOM_CONFIG: custom/.config  # 完整的.config配置文件
+      CUSTOM_CONFIG: custom/all.config  # 配置文件更名为all.config
       CUSTOM_FEEDS: custom/feeds.conf.default  # 自定义feeds配置
       OUTPUT_PREFIX: lede-firmware
       # 固件固定信息（可根据实际情况修改）
@@ -64,20 +64,21 @@ jobs:
             echo "⚠️ 未找到自定义feeds文件，使用默认配置"
           fi
 
-      - name: 替换自定义.config配置文件
+      - name: 替换自定义all.config配置文件
         run: |
           if [ -f "$GITHUB_WORKSPACE/$CUSTOM_CONFIG" ]; then
-            echo "🔄 替换为自定义.config"
+            echo "🔄 替换为自定义all.config"
+            # 将custom/all.config复制到源码目录并命名为.config（LEDE编译要求配置文件名为.config）
             cp -f "$GITHUB_WORKSPACE/$CUSTOM_CONFIG" lede/.config
             # 检查配置并自动安装缺失依赖
             cd lede
             make defconfig  # 确保配置生效（自动处理依赖）
           else
-            echo "❌ 未找到自定义.config文件，编译终止"
-            exit 1  # 必须提供.config，否则终止编译
+            echo "❌ 未找到自定义all.config文件，编译终止"
+            exit 1  # 必须提供all.config，否则终止编译
           fi
-          # 保存最终生效的配置（便于核对）
-          cp lede/.config "$GITHUB_WORKSPACE/config-final-${{ steps.timestamp.outputs.DATE }}.txt"
+          # 保存最终生效的配置（便于核对，命名保留all.config标识）
+          cp lede/.config "$GITHUB_WORKSPACE/all-config-final-${{ steps.timestamp.outputs.DATE }}.txt"
 
       - name: 开始编译
         run: |
@@ -108,8 +109,8 @@ jobs:
       - name: 上传最终配置到Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-config
-          path: config-final-${{ steps.timestamp.outputs.DATE }}.txt
+          name: all-build-config
+          path: all-config-final-${{ steps.timestamp.outputs.DATE }}.txt
           retention-days: 7
 
       - name: 上传固件到Releases
@@ -120,7 +121,7 @@ jobs:
           body: |
             ### LEDE 自动编译固件（${{ steps.timestamp.outputs.DATE }}）
             - 编译时间: ${{ steps.timestamp.outputs.DATE }} ${{ steps.timestamp.outputs.TIME }}
-            - 配置文件: 基于自定义.config编译
+            - 配置文件: 基于自定义all.config编译
 
             📒 固件信息
             💻 平台架构: ${{ env.PLATFORM }}
