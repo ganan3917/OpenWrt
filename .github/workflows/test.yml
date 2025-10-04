@@ -1,23 +1,20 @@
 name: LEDE 自动编译
 
-# 触发条件：手动触发 + 北京时间凌晨3点（UTC时间19点）
 on:
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
   schedule:
-    - cron: '0 19 * * *'  # UTC时间19:00 = 北京时间03:00
+    - cron: '0 19 * * *'  # 北京时间凌晨3点
 
 jobs:
   build-lede:
     runs-on: ubuntu-22.04
     env:
-      # 配置仓库信息
       LEDE_REPO: https://github.com/coolsnowwolf/lede
       LEDE_BRANCH: master
-      # 自定义文件路径（仓库根目录下的custom文件夹）
-      CUSTOM_CONFIG: custom/all.config  # 配置文件更名为all.config
-      CUSTOM_FEEDS: custom/feeds.conf.default  # 自定义feeds配置
+      # 关键：使用绝对路径格式，明确从仓库根目录开始
+      CUSTOM_CONFIG: ./custom/all.config  # 核心修改：添加./确保相对路径正确
+      CUSTOM_FEEDS: ./custom/feeds.conf.default
       OUTPUT_PREFIX: lede-firmware
-      # 固件固定信息（可根据实际情况修改）
       PLATFORM: x86-64
       KERNEL_VERSION: 6.12.49
       DEFAULT_IP: 192.168.1.1
@@ -26,9 +23,11 @@ jobs:
     steps:
       - name: 检查环境
         run: |
-          echo "当前系统: $(lsb_release -d | cut -f2)"
-          echo "CPU核心数: $(nproc)"
-          echo "可用内存: $(free -h | awk '/Mem/ {print $2}')"
+          echo "当前工作目录: $(pwd)"
+          echo "仓库根目录: $GITHUB_WORKSPACE"
+
+      - name: 拉取仓库代码（包含custom文件夹）
+        uses: actions/checkout@v4  # 关键步骤：拉取当前仓库所有文件
 
       - name: 安装依赖
         run: |
@@ -40,23 +39,24 @@ jobs:
       - name: 生成时间戳
         id: timestamp
         run: |
-          echo "DATE=$(date +%Y%m%d)" >> $GITHUB_OUTPUT  # 日期（如20241005）
-          echo "TIME=$(date +%H%M%S)" >> $GITHUB_OUTPUT  # 时间（如030000）
+          echo "DATE=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+          echo "TIME=$(date +%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: 克隆LEDE源码
         run: |
           git clone --depth 1 -b $LEDE_BRANCH $LEDE_REPO lede
           cd lede
-          # 初始化默认feeds（后续若有自定义feeds会覆盖）
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
       - name: 替换自定义feeds配置
         run: |
-          if [ -f "$GITHUB_WORKSPACE/$CUSTOM_FEEDS" ]; then
-            echo "🔄 替换为自定义feeds.conf.default"
-            cp -f "$GITHUB_WORKSPACE/$CUSTOM_FEEDS" lede/feeds.conf.default
-            # 重新更新feeds（应用自定义源）
+          # 打印文件检查日志（用于调试）
+          echo "检查feeds文件是否存在: $CUSTOM_FEEDS"
+          ls -l ./custom || echo "custom文件夹不存在"
+          if [ -f "$CUSTOM_FEEDS" ]; then
+            echo "替换自定义feeds.conf.default"
+            cp -f "$CUSTOM_FEEDS" lede/feeds.conf.default
             cd lede
             ./scripts/feeds update -a
             ./scripts/feeds install -a
@@ -66,42 +66,39 @@ jobs:
 
       - name: 替换自定义all.config配置文件
         run: |
-          if [ -f "$GITHUB_WORKSPACE/$CUSTOM_CONFIG" ]; then
-            echo "🔄 替换为自定义all.config"
-            # 将custom/all.config复制到源码目录并命名为.config（LEDE编译要求配置文件名为.config）
-            cp -f "$GITHUB_WORKSPACE/$CUSTOM_CONFIG" lede/.config
-            # 检查配置并自动安装缺失依赖
+          # 核心调试：打印路径和文件列表，确认文件是否存在
+          echo "当前工作目录: $(pwd)"
+          echo "预期的all.config路径: $CUSTOM_CONFIG"
+          ls -l ./custom || echo "custom文件夹不存在"  # 列出custom文件夹内容
+          ls -l "$CUSTOM_CONFIG" || echo "all.config文件不存在"  # 直接检查目标文件
+
+          if [ -f "$CUSTOM_CONFIG" ]; then
+            echo "替换为自定义all.config"
+            cp -f "$CUSTOM_CONFIG" lede/.config  # 复制到源码目录并命名为.config
             cd lede
-            make defconfig  # 确保配置生效（自动处理依赖）
+            make defconfig
           else
             echo "❌ 未找到自定义all.config文件，编译终止"
-            exit 1  # 必须提供all.config，否则终止编译
+            exit 1
           fi
-          # 保存最终生效的配置（便于核对，命名保留all.config标识）
           cp lede/.config "$GITHUB_WORKSPACE/all-config-final-${{ steps.timestamp.outputs.DATE }}.txt"
 
       - name: 开始编译
         run: |
           cd lede
-          # 编译线程数（CPU核心数，避免内存溢出）
           threads=$(nproc)
-          echo "🚀 开始编译，使用$threads线程"
-          make -j$threads V=s  # V=s 显示详细日志，便于排查错误
+          make -j$threads V=s
 
       - name: 整理编译产物
         id: package
         run: |
           mkdir -p firmware
-          # 复制所有固件文件（.bin/.img/.tar.gz）
           find lede/bin/targets/ -type f \( -name "*.bin" -o -name "*.img" -o -name "*.tar.gz" \) -exec cp {} firmware/ \;
-          # 重命名产物（添加日期标识）
           cd firmware
           for file in *; do
             newname="${{ env.OUTPUT_PREFIX }}-${{ steps.timestamp.outputs.DATE }}-${file}"
             mv "$file" "$newname"
-            echo "📦 重命名: $newname"
           done
-          # 打包所有固件
           cd ..
           tar -czvf "${{ env.OUTPUT_PREFIX }}-${{ steps.timestamp.outputs.DATE }}.tar.gz" firmware/
           echo "PACKAGE_NAME=${{ env.OUTPUT_PREFIX }}-${{ steps.timestamp.outputs.DATE }}.tar.gz" >> $GITHUB_OUTPUT
@@ -134,14 +131,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.LEDE_ALL }}
 
-      - name: 清理旧Releases（保留最近5个）
+      - name: 清理旧Releases
         run: |
           echo "${{ secrets.LEDE_ALL }}" | gh auth login --with-token
           repo=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
           releases=$(gh api repos/$repo/releases | jq -r '.[] | .id')
           ids=($releases)
           if [ ${#ids[@]} -gt 5 ]; then
-            echo "🧹 清理旧Release"
             for ((i=5; i<${#ids[@]}; i++)); do
               gh api -X DELETE repos/$repo/releases/${ids[$i]}
             done
